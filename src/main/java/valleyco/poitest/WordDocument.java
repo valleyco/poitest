@@ -14,43 +14,31 @@ import org.apache.poi.xwpf.usermodel.*;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.math.BigInteger;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import javax.xml.bind.annotation.adapters.HexBinaryAdapter;
-import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTColor;
-import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTDecimalNumber;
-import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTFonts;
-import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTHpsMeasure;
-import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTOnOff;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTP;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTPPr;
-import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTRPr;
-import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTString;
-import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTStyle;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTTbl;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTTblPr;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.STOnOff;
-import org.openxmlformats.schemas.wordprocessingml.x2006.main.STStyleType;
 import valleyco.msword.StylePara;
 
 public class WordDocument {
 
     public static String logo = "logo-leaf.png";
+    public static String logo_template = "logo.docx";
     public static String paragraph1 = "poi-word-para1.txt";
     public static String paragraph2 = "poi-word-para2.txt";
     public static String paragraph3 = "poi-word-para3.txt";
     public static String output = "rest-with-spring.docx";
 
     public void handleSimpleDoc() throws Exception {
-        XWPFDocument document = new XWPFDocument();
-        //XWPFDocument document = new XWPFDocument(new FileInputStream("base_document.docx"));
+        //XWPFDocument document = new XWPFDocument();
+        XWPFDocument document = new XWPFDocument( Files.newInputStream(Paths.get(ClassLoader.getSystemResource(logo_template).toURI())));
         XWPFParagraph title = document.createParagraph();
         title.setAlignment(ParagraphAlignment.CENTER);
         XWPFRun titleRun = title.createRun();
@@ -70,12 +58,18 @@ public class WordDocument {
         subTitleRun.setTextPosition(20);
         subTitleRun.setUnderline(UnderlinePatterns.DOT_DOT_DASH);
 
-        XWPFParagraph image = document.createParagraph();
-        image.setAlignment(ParagraphAlignment.CENTER);
-        XWPFRun imageRun = image.createRun();
+        XWPFParagraph imageParagraph = document.createParagraph();
+        imageParagraph.setAlignment(ParagraphAlignment.CENTER);
+        XWPFRun imageRun = imageParagraph.createRun();
         imageRun.setTextPosition(20);
         Path imagePath = Paths.get(ClassLoader.getSystemResource(logo).toURI());
-        imageRun.addPicture(Files.newInputStream(imagePath), XWPFDocument.PICTURE_TYPE_PNG, imagePath.getFileName().toString(), Units.toEMU(50), Units.toEMU(50));
+        imageRun.addPicture(
+                Files.newInputStream(imagePath),
+                XWPFDocument.PICTURE_TYPE_PNG,
+                imagePath.getFileName().toString(),
+                Units.toEMU(50),
+                Units.toEMU(50)
+        );
 
         XWPFParagraph sectionTitle = document.createParagraph();
         XWPFRun sectionTRun = sectionTitle.createRun();
@@ -103,11 +97,11 @@ public class WordDocument {
         XWPFRun para3Run = para3.createRun();
         para3Run.setText(string3);
 
-        var styles = document.createStyles();
         var style = (new StylePara("test"))
                 .setColor("0000ff")
-                .setPointSize(25).setFont("David");
-        styles.addStyle(style.toStyle());
+                .setPointSize(25)
+                .setFont("David");
+        document.createStyles().addStyle(style.toStyle());
 
         XWPFParagraph para4 = document.createParagraph();
         CTP ctPara4 = para4.getCTP();
@@ -160,7 +154,7 @@ public class WordDocument {
         document.close();
     }
 
-    public String convertTextFileToString(String fileName) {
+    public static String convertTextFileToString(String fileName) {
         try (Stream<String> stream = Files.lines(Paths.get(ClassLoader.getSystemResource(fileName).toURI()))) {
             return stream.collect(Collectors.joining(" "));
         } catch (IOException | URISyntaxException e) {

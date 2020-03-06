@@ -7,17 +7,13 @@ package valleyco.msword;
 
 import java.math.BigInteger;
 import javax.xml.bind.annotation.adapters.HexBinaryAdapter;
-import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.apache.poi.xwpf.usermodel.XWPFStyle;
-import org.apache.poi.xwpf.usermodel.XWPFStyles;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTColor;
-import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTDecimalNumber;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTFonts;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTHpsMeasure;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTOnOff;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTPPr;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTRPr;
-import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTString;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTStyle;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.STStyleType;
 
@@ -27,6 +23,7 @@ import org.openxmlformats.schemas.wordprocessingml.x2006.main.STStyleType;
  */
 public class StylePara {
 
+    final private CTOnOff OnOffNull = CTOnOff.Factory.newInstance();
     private String strStyleId;
     private int headingLevel = 1;
     private int pointSize = 10;
@@ -75,11 +72,10 @@ public class StylePara {
         // lower number > style is more prominent in the formats bar
         ctStyle.setUiPriority(CTFactory.getDecimalNumber(headingLevel));
 
-        CTOnOff onoffnull = CTOnOff.Factory.newInstance();
-        ctStyle.setUnhideWhenUsed(onoffnull);
+        ctStyle.setUnhideWhenUsed(OnOffNull);
 
         // style shows up in the formats bar
-        ctStyle.setQFormat(onoffnull);
+        ctStyle.setQFormat(OnOffNull);
 
         // style defines a heading of the given level
         CTPPr ppr = CTPPr.Factory.newInstance();
