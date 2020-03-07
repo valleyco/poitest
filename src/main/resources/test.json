@@ -1,9 +1,20 @@
 {
-    "section": [
+    "sections": [
         { 
-            "type": "title",
-            "style" : "title",
-            "content" : "This is the main title"
+            "type": "para",
+            "style": "Title",
+            "Alignment": "center",
+            "FontSize": 16,
+            "FontFamily": "Time New Romans",
+            "Runs": [
+                {
+                    "Text": "This is the main title",
+                    "FontColor": "00CC44",
+                    "FontSize": 16,
+                    "FontFamily": "Time New Romans",
+                    "TextPosition": 20
+                }
+            ]
         }
     ]
 }

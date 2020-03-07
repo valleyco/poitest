@@ -6,7 +6,7 @@
 package valleyco.msword;
 
 import java.math.BigInteger;
-import javax.xml.bind.annotation.adapters.HexBinaryAdapter;
+import javax.xml.bind.DatatypeConverter;
 import org.apache.poi.xwpf.usermodel.XWPFStyle;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTColor;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTFonts;
@@ -99,7 +99,7 @@ public class StylePara {
         rpr.setSzCs(size2);
 
         CTColor color = CTColor.Factory.newInstance();
-        color.setVal(hexToBytes(hexColor));
+        color.setVal(DatatypeConverter.parseHexBinary(hexColor));
         rpr.setColor(color);
         pfStyle.getCTStyle().setRPr(rpr);
         // is a null op if already defined
@@ -109,9 +109,4 @@ public class StylePara {
 
     }
 
-    public static byte[] hexToBytes(String hexString) {
-        HexBinaryAdapter adapter = new HexBinaryAdapter();
-        byte[] bytes = adapter.unmarshal(hexString);
-        return bytes;
-    }
 }

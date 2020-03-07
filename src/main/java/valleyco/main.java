@@ -9,6 +9,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.json.JSONObject;
 import org.json.JSONTokener;
+import valleyco.poitest.JsonToDocx;
 import valleyco.poitest.SimpleTable;
 import valleyco.poitest.WordDocument;
 
@@ -40,5 +41,9 @@ public class main {
     public static void main(String args[]) throws Exception {
         poiDoc();
         SimpleTable.demo(args);
+        var jsonDoc= getJson("test.json");
+        JsonToDocx j = new JsonToDocx(jsonDoc);
+        j.convert();
+        j.save("json.docx");
     }
 }
