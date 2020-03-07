@@ -8,11 +8,17 @@
             "FontFamily": "Time New Romans",
             "Runs": [
                 {
+                    "Type": "Text",
                     "Text": "This is the main title",
                     "FontColor": "00CC44",
                     "FontSize": 16,
                     "FontFamily": "Time New Romans",
                     "TextPosition": 20
+                },
+                {
+                    "Type" : "SimpleField",
+                    "Name" : "AUTHOR",
+                    "Text" : "שם המחבר"
                 }
             ]
         }

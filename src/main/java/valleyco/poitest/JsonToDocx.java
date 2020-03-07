@@ -15,26 +15,27 @@ import org.apache.poi.xwpf.usermodel.XWPFParagraph;
 import org.apache.poi.xwpf.usermodel.XWPFRun;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTSimpleField;
 
 /**
  *
  * @author David Levy <levydav@gmail.com>
  */
 public class JsonToDocx {
-    
+
     final private XWPFDocument document;
     final JSONObject jsonDoc;
-    
+
     public JsonToDocx(JSONObject jsonDoc) {
         this.jsonDoc = jsonDoc;
         document = new XWPFDocument();
     }
-    
+
     public JsonToDocx(JSONObject jsonDoc, XWPFDocument document) {
         this.jsonDoc = jsonDoc;
         this.document = document;
     }
-    
+
     public void convert() {
         JSONArray sections = (JSONArray) jsonDoc.get("sections");
         for (Object o : sections) {
@@ -50,12 +51,12 @@ public class JsonToDocx {
             }
         }
     }
-    
+
     private void addPara(JSONObject para) {
         XWPFParagraph xpara = document.createParagraph();
         JSONArray runs = new JSONArray();
         Iterator<String> keys = para.keys();
-        
+
         while (keys.hasNext()) {
             String key = keys.next();
             switch (key) {
@@ -85,8 +86,20 @@ public class JsonToDocx {
             addParaRun(xpara, (JSONObject) o);
         }
     }
-    
+
     private void addParaRun(XWPFParagraph p, JSONObject run) {
+        switch (run.getString("Type")) {
+            case "Text":
+                addParaTextRun(p, run);
+                break;
+            case "SimpleField":
+                addField(p, run);
+                break;
+        }
+    }
+
+    private void addParaTextRun(XWPFParagraph p, JSONObject run) {
+
         XWPFRun paraRun = p.createRun();
         Iterator<String> runKeys = run.keys();
         while (runKeys.hasNext()) {
@@ -110,15 +123,23 @@ public class JsonToDocx {
                     paraRun.setTextPosition(run.getInt(key));
                     break;
             }
-            
+
         }
-        
+
     }
-    
+
+    private static void addField(XWPFParagraph paragraph, JSONObject run) {
+        String fieldName = run.getString("Name");
+        String text = run.has("Text") ? run.getString("Text") : "<<" + fieldName + ">>";
+        CTSimpleField ctSimpleField = paragraph.getCTP().addNewFldSimple();
+        ctSimpleField.setInstr(fieldName + " \\* MERGEFORMAT ");
+        ctSimpleField.addNewR().addNewT().setStringValue(text);
+    }
+
     private void addTable(JSONObject table) {
-        
+
     }
-    
+
     public void save(String filename) throws FileNotFoundException, IOException {
         FileOutputStream out = new FileOutputStream(filename);
         document.write(out);
